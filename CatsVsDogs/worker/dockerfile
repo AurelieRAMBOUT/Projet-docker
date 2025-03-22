@@ -1,0 +1,25 @@
+# Utiliser l’image .NET SDK pour la construction
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+
+# Définir le dossier de travail
+WORKDIR /app
+
+# Copier les fichiers du projet
+COPY . .
+
+# Restaurer les dépendances et compiler
+RUN dotnet restore
+RUN dotnet build -c Release --no-restore
+RUN dotnet publish -c Release -o /app/out
+
+# Utiliser une image plus légère pour l'exécution
+FROM mcr.microsoft.com/dotnet/runtime:7.0
+
+# Définir le dossier de travail
+WORKDIR /app
+ 
+# Copier les fichiers compilés
+COPY --from=build /app/out .
+
+# Lancer l’application
+CMD ["dotnet", "Worker.dll"]
