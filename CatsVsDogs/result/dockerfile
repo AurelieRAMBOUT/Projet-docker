@@ -2,17 +2,20 @@
 FROM node:18-alpine
 
 # Définir le dossier de travail
+ENV NODE_ENV=production
 WORKDIR /app
 
-# Copier package.json et installer les dépendances
-COPY package*.json ./
-RUN npm install
+# Copier les fichiers de dépendances
+COPY package.json package-lock.json ./
 
-# Copier le code source
+# Installer les dépendances
+RUN npm ci
+
+# Copier le reste du code source
 COPY . .
 
-# Exposer le port 5001
+# Exposer le port utilisé par l'app
 EXPOSE 5001
 
-# Lancer l’application
+# Lancer l'application
 CMD ["node", "server.js"]
